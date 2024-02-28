@@ -6,6 +6,6 @@ authors = ["mkpoli <mkpoli@mkpo.li>"]
 description = "Converts Ainu words between different scripts (Katakana, Latin, Cyrillic)"
 documentation = "https://docs.rs/ainconv"
 repository = "https://github.com/mkpoli/ainconv-rs"
-keywords = ["ainu", "converter", "script", "text", "language", "writing system", "nlp", "converter"]
+keywords = ["ainu", "converter", "script", "language", "writing system"]
 readme = "README.md"
 license = "MIT"
