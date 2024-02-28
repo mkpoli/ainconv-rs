@@ -2,8 +2,13 @@
 name = "ainconv"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["mkpoli <mkpoli@mkpo.li>"]
+description = "Converts Ainu words between different scripts (Katakana, Latin, Cyrillic)"
+documentation = "https://docs.rs/ainconv"
+repository = "https://github.com/mkpoli/ainconv-rs"
+keywords = ["ainu", "converter", "script", "text", "language", "writing system", "nlp", "converter"]
+readme = "README.md"
+license = "MIT"
 
 [dependencies]
 regex = "1.10.3"
