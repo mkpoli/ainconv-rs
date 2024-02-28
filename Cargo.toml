@@ -9,6 +9,3 @@ repository = "https://github.com/mkpoli/ainconv-rs"
 keywords = ["ainu", "converter", "script", "text", "language", "writing system", "nlp", "converter"]
 readme = "README.md"
 license = "MIT"
-
-[dependencies]
-regex = "1.10.3"
