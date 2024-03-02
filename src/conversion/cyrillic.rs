@@ -1,3 +1,20 @@
+/// Convert romanized Ainu to Cyrillic
+///
+/// # Arguments
+///
+/// * `latn` - A string slice that holds the romanized Ainu word.
+///
+/// # Returns
+///
+/// * `String` - The Cyrillic representation of the input string.
+///
+/// # Example
+///
+/// ```
+/// use ainconv::convert_latn_to_cyrl;
+/// let cyrl = convert_latn_to_cyrl("aynu");
+/// assert_eq!(cyrl, "айну");
+/// ```
 pub fn convert_latn_to_cyrl(latn: &str) -> String {
     let mut result = String::new();
     let mut chars = latn.chars().peekable();
@@ -17,7 +34,7 @@ pub fn convert_latn_to_cyrl(latn: &str) -> String {
                     ('y', 'e') => Some("е"),
                     _ => unreachable!(),
                 }
-            },
+            }
             _ => match current_lower {
                 'a' => Some("а"),
                 'i' => Some("и"),
@@ -49,7 +66,7 @@ pub fn convert_latn_to_cyrl(latn: &str) -> String {
                 } else {
                     c.to_string()
                 }
-            },
+            }
             None => current_char.to_string(),
         };
         result.push_str(&cyrl_result);
@@ -58,6 +75,23 @@ pub fn convert_latn_to_cyrl(latn: &str) -> String {
     result
 }
 
+/// Convert Cyrillic to romanized Ainu
+///
+/// # Arguments
+///
+/// * `cyrl` - A string slice that holds the Cyrillic word.
+///
+/// # Returns
+///
+/// * `String` - The romanized Ainu representation of the input string.
+///
+/// # Example
+///
+/// ```
+/// use ainconv::convert_cyrl_to_latn;
+/// let latn = convert_cyrl_to_latn("айну");
+/// assert_eq!(latn, "aynu");
+/// ```
 pub fn convert_cyrl_to_latn(cyrl: &str) -> String {
     let mut result = String::new();
     let mut chars = cyrl.chars().peekable();
@@ -77,7 +111,7 @@ pub fn convert_cyrl_to_latn(cyrl: &str) -> String {
                     'э' => Some("y’e"),
                     _ => unreachable!(),
                 }
-            },
+            }
             _ => match current_lower {
                 'ю' => Some("yu"),
                 'я' => Some("ya"),
@@ -115,7 +149,7 @@ pub fn convert_cyrl_to_latn(cyrl: &str) -> String {
                 } else {
                     c.to_string()
                 }
-            },
+            }
             None => current_char.to_string(),
         };
         result.push_str(&cyrl_result);

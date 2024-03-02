@@ -1,6 +1,23 @@
 // See notice in the TypeScript version https://github.com/mkpoli/ainconv/blob/main/src/conversion/katakana.ts
 use crate::{conversion::latin::CONSONANTS, syllable::separate};
 
+/// Convert romanized Ainu to Katakana
+///
+/// # Arguments
+///
+/// * `latn` - A string slice that holds the romanized Ainu word.
+///
+/// # Returns
+///
+/// * `String` - The Katakana representation of the input string.
+///
+/// # Example
+///
+/// ```
+/// use ainconv::convert_latn_to_kana;
+/// let kana = convert_latn_to_kana("aynu");
+/// assert_eq!(kana, "アイヌ");
+/// ```
 pub fn convert_latn_to_kana(latn: &str) -> String {
     let syllables = separate(latn);
 
@@ -111,50 +128,38 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
                 "t" => "ッ",
                 "T" => "ㇳ",
                 "k" => "ㇰ",
-                "r" => {
-                    match next_syllable {
-                        Some(next) => {
-                            match next.chars().next() {
-                                Some('a') => "ㇻ",
-                                Some('i') => "ㇼ",
-                                Some('u') => "ㇽ",
-                                Some('e') => "ㇾ",
-                                Some('o') => "ㇿ",
-                                _ => "ㇽ",
-                            }
-                        },
-                        None => "ㇽ",
-                    }
+                "r" => match next_syllable {
+                    Some(next) => match next.chars().next() {
+                        Some('a') => "ㇻ",
+                        Some('i') => "ㇼ",
+                        Some('u') => "ㇽ",
+                        Some('e') => "ㇾ",
+                        Some('o') => "ㇿ",
+                        _ => "ㇽ",
+                    },
+                    None => "ㇽ",
                 },
-                "h" => {
-                    match next_syllable {
-                        Some(next) => {
-                            match next.chars().next() {
-                                Some('a') => "ㇵ",
-                                Some('i') => "ㇶ",
-                                Some('u') => "ㇷ",
-                                Some('e') => "ㇸ",
-                                Some('o') => "ㇹ",
-                                _ => "ㇷ",
-                            }
-                        },
-                        None => "ㇷ",
-                    }
+                "h" => match next_syllable {
+                    Some(next) => match next.chars().next() {
+                        Some('a') => "ㇵ",
+                        Some('i') => "ㇶ",
+                        Some('u') => "ㇷ",
+                        Some('e') => "ㇸ",
+                        Some('o') => "ㇹ",
+                        _ => "ㇷ",
+                    },
+                    None => "ㇷ",
                 },
-                "x" => {
-                    match next_syllable {
-                        Some(next) => {
-                            match next.chars().next() {
-                                Some('a') => "ㇵ",
-                                Some('i') => "ㇶ",
-                                Some('u') => "ㇷ",
-                                Some('e') => "ㇸ",
-                                Some('o') => "ㇹ",
-                                _ => "ㇷ",
-                            }
-                        },
-                        None => "ㇷ",
-                    }
+                "x" => match next_syllable {
+                    Some(next) => match next.chars().next() {
+                        Some('a') => "ㇵ",
+                        Some('i') => "ㇶ",
+                        Some('u') => "ㇷ",
+                        Some('e') => "ㇸ",
+                        Some('o') => "ㇹ",
+                        _ => "ㇷ",
+                    },
+                    None => "ㇷ",
                 },
                 _ => coda,
             }
@@ -170,6 +175,23 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
         .replace("ヰ", "ウィ")
 }
 
+/// Convert Katakana to romanized Ainu
+///
+/// # Arguments
+///
+/// * `kana` - A string slice that holds the Katakana word.
+///
+/// # Returns
+///
+/// * `String` - The romanized Ainu representation of the input string.
+///
+/// # Example
+///
+/// ```
+/// use ainconv::convert_kana_to_latn;
+/// let latn = convert_kana_to_latn("アイヌ");
+/// assert_eq!(latn, "ainu");
+/// ```
 pub fn convert_kana_to_latn(kana: &str) -> String {
     let mut result = String::new();
     let mut chars = kana.chars().peekable();
@@ -285,4 +307,3 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
 
     result
 }
-
