@@ -1,14 +1,5 @@
-use crate::conversion::latin::{
-    VOWELS,
-    CONSONANTS
-};
+use crate::conversion::latin::{CONSONANTS, VOWELS};
 use std::collections::HashMap;
-
-/**
- * Separate a string into syllables.
- * @param latn The romanized string to be separated.
- * @returns An array of syllables.
- */
 
 /// Syllabify an Ainu word
 ///
