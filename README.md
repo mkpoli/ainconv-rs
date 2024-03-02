@@ -85,4 +85,5 @@ println!("{:?}", separate("eyaykosiramsuypa")); // ["e", "yay", "ko", "si", "ram
 ## See also
 
 * [ainconv - npm](https://www.npmjs.com/package/ainconv): The JavaScript version of this package
+* [ainconv - PyPI](https://pypi.org/project/ainconv/): The Python version of this package
 * [Module:ain-kana-conv - ウィクショナリー日本語版](https://ja.wiktionary.org/wiki/%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB:ain-kana-conv): The original Lua Scribunto module in the Japanese Wiktionary
