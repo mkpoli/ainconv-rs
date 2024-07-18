@@ -212,7 +212,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             // ('オ', Some('イ')) => Some("oy"),
             // ('ウ', Some('イ')) => Some("uy"),
             ('ㇷ', Some('゚')) => Some("p"),
-            ('ﾌ', Some('\u{ff9f}')) => Some("p"),
+            ('\u{ff8c}', Some('\u{ff9f}')) => Some("p"),
             ('ト', Some('゚')) => Some("tu"),
             ('チ', Some('ャ')) => Some("ca"),
             ('チ', Some('ュ')) => Some("cu"),
