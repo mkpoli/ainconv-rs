@@ -212,6 +212,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             // ('オ', Some('イ')) => Some("oy"),
             // ('ウ', Some('イ')) => Some("uy"),
             ('ㇷ', Some('゚')) => Some("p"),
+            ('ﾌ', Some('\u{ff9f}')) => Some("p"),
             ('ト', Some('゚')) => Some("tu"),
             ('チ', Some('ャ')) => Some("ca"),
             ('チ', Some('ュ')) => Some("cu"),
@@ -219,6 +220,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             ('チ', Some('ョ')) => Some("co"),
             _ => None,
         };
+
 
         if let Some(diagraph) = converted_diagraph {
             result.push_str(diagraph);
@@ -276,6 +278,27 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             'ワ' => Some("wa"),
             'ヲ' => Some("wo"),
             'ン' => Some("n"),
+            'ﾑ' => Some("m"),
+            'ﾇ' => Some("n"),
+            'ｳ' => Some("w"),
+            'ｲ' => Some("y"),
+            'ﾌ' => Some("h"),
+            'ｼ' => Some("s"),
+            'ﾂ' => Some("t"),
+            'ﾄ' => Some("t"),
+            'ｸ' => Some("k"),
+            'ﾊ' => Some("x"),
+            'ﾋ' => Some("x"),
+            'ﾍ' => Some("x"),
+            'ﾎ' => Some("x"),
+            'ｱ' => Some("a"),
+            'ｴ' => Some("e"),
+            'ｵ' => Some("o"),
+            'ﾗ' => Some("r"),
+            'ﾘ' => Some("r"),
+            'ﾙ' => Some("r"),
+            'ﾚ' => Some("r"),
+            'ﾛ' => Some("r"),
             'ㇺ' => Some("m"),
             'ㇴ' => Some("n"),
             'ゥ' => Some("w"),
@@ -297,6 +320,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             'ㇽ' => Some("r"),
             'ㇾ' => Some("r"),
             'ㇿ' => Some("r"),
+            '　' => Some(" "),
             _ => None,
         };
         match converted {
