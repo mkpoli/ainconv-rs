@@ -243,6 +243,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             'セ' => Some("se"),
             'ソ' => Some("so"),
             'タ' => Some("ta"),
+            'チ' => Some("ci"),
             'テ' => Some("te"),
             'ト' => Some("to"),
             'ナ' => Some("na"),
