@@ -297,6 +297,14 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             'ㇽ' => Some("r"),
             'ㇾ' => Some("r"),
             'ㇿ' => Some("r"),
+            '。' => Some(". "),
+            '、' => Some(", "),
+            '「' => Some(" \""),
+            '」' => Some("\" "),
+            '『' => Some(" '"),
+            '』' => Some("' "),
+            '！' => Some("! "),
+            '？' => Some("? "),
             _ => None,
         };
         match converted {
