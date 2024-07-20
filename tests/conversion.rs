@@ -1,9 +1,11 @@
 use ainconv::*;
 
-const TEST_CASES: [(&str, &'static [&str], &str, &str, &str, &str); 14] = [
+const TEST_CASES: [(&str, &'static [&str], &str, &str, &str, &str); 16] = [
     ("", &[], "", "", "", ""),
     ("aynu", &["ay", "nu"], "アイヌ", "айну", "애누", "ainu"),
     ("itak", &["i", "tak"], "イタㇰ", "итак", "이닥", "itak"),
+    ("maciya", &["ma", "ci", "ya"], "マチヤ", "мация" /* TODO: мачия? */, "마지야", "maciya"),
+    ("acapo", &["a", "ca", "po"], "アチャポ", "ацапо" /* TODO: ачапо? */, "아자포", "acapo"),
     ("aynuitak", &["ay", "nu", "i", "tak"], "アイヌイタㇰ", "айнуитак", "애누이닥", "ainuitak"),
     ("sinep", &["si", "nep"], "シネㇷ゚", "синэп", "시넙", "sinep"),
     ("ruunpe", &["ru", "un", "pe"], "ルウンペ", "руунпэ", "루운버", "ruunpe"),
