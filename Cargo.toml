@@ -1,6 +1,6 @@
 [package]
 name = "ainconv"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["mkpoli <mkpoli@mkpo.li>"]
 description = "Converts Ainu words between different scripts (Katakana, Latin, Cyrillic)"
