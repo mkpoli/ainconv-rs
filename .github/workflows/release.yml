@@ -1,0 +1,38 @@
+# https://zenn.dev/linnefromice/articles/gh-actions-auto-crate-versionup
+
+name: release
+on:
+  workflow_dispatch:
+    inputs:
+      level_or_version:
+        description: 'Release level or version, e.g patch, minor, major, 1.0.0'
+        type: string
+env:
+  RUST_VERSION: 1.79.0
+  DEFAULT_RELEASE_LEVEL: patch
+  BASE_BRANCH_NAME: topic/version-up
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.PAT }}
+    steps:
+      - name: Checkout the source code
+        uses: actions/checkout@v3
+      - name: Install Rust
+        run: |
+          rustup update ${{ env.RUST_VERSION }} --no-self-update
+          rustup default ${{ env.RUST_VERSION }}
+      - name: Install cargo-release
+        run: cargo install cargo-release --locked
+      - name: Run cargo release
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          cargo release version --execute --no-confirm ${{ github.event.inputs.level_or_version || env.DEFAULT_RELEASE_LEVEL }}
+          PKG_VER=$(cargo metadata --format-version=1 --no-deps | jq ".packages[0].version" | tr -d '"')
+          git checkout -b ${{ env.BASE_BRANCH_NAME }}-$PKG_VER
+          cargo release commit --execute --no-confirm
+          git push -u origin HEAD
+          gh pr create --fill
+          gh pr merge --auto
