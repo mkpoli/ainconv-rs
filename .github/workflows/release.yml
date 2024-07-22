@@ -50,5 +50,5 @@ jobs:
 
       - name: Create pull request
         run:
-          gh pr create --fill
+          gh pr create --fill -l release --body "This is an auto-generated release PR for v$PKG_VER"
           # gh pr merge --auto
