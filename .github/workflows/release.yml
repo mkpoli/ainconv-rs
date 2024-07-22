@@ -15,7 +15,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.PAT }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout the source code
         uses: actions/checkout@v3
