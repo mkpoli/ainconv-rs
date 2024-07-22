@@ -12,8 +12,12 @@ env:
   DEFAULT_RELEASE_LEVEL: patch
   BASE_BRANCH_NAME: release
 jobs:
-  release:
+  create-release-pr:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    name: Release
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
