@@ -166,7 +166,7 @@ fn test_convert_latn_to_kana() {
 #[test]
 fn test_convert_kana_to_latn() {
     for case in CASES.iter() {
-        assert_eq!(convert_kana_to_latn(&case.kana), case.latn.to_owned());
+        assert_eq!(convert_kana_to_latn(&case.kana), case.latn_lossy.to_owned());
     }
 
     for (_, _, kana, _, _, latn) in &TEST_CASES {
@@ -201,7 +201,7 @@ fn test_convert_latn_to_cyrl() {
 #[test]
 fn test_convert_cyrl_to_latn() {
     for case in CASES.iter() {
-        assert_eq!(convert_cyrl_to_latn(&case.cyrl), case.latn.to_owned());
+        assert_eq!(convert_cyrl_to_latn(&case.cyrl), case.latn_lossy.to_owned());
     }
 
     for (_, _, _, cyrl, _, latn) in &TEST_CASES {
