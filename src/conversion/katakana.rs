@@ -1,5 +1,7 @@
 // See notice in the TypeScript version https://github.com/mkpoli/ainconv/blob/main/src/conversion/katakana.ts
-use crate::{conversion::latin::CONSONANTS, syllable::separate};
+use crate::conversion::latin::CONSONANTS;
+use crate::syllable::separate;
+use crate::util::remove_acute_accent;
 
 /// Convert romanized Ainu to Katakana
 ///
@@ -20,6 +22,7 @@ use crate::{conversion::latin::CONSONANTS, syllable::separate};
 /// ```
 pub fn convert_latn_to_kana(latn: &str) -> String {
     let latn = latn.replace("=", "");
+    let latn = remove_acute_accent(&latn);
 
     let syllables = separate(&latn);
 
