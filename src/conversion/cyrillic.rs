@@ -1,3 +1,5 @@
+use unicode_normalization::UnicodeNormalization;
+
 /// Convert romanized Ainu to Cyrillic
 ///
 /// # Arguments
@@ -17,6 +19,7 @@
 /// ```
 pub fn convert_latn_to_cyrl(latn: &str) -> String {
     let mut result = String::new();
+    let latn = latn.nfd().collect::<String>();
     let mut chars = latn.chars().peekable();
 
     while let Some(current_char) = chars.next() {
