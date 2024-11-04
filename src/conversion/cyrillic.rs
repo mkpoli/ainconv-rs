@@ -157,5 +157,5 @@ pub fn convert_cyrl_to_latn(cyrl: &str) -> String {
         };
         result.push_str(&cyrl_result);
     }
-    result
+    result.nfc().collect::<String>()
 }
