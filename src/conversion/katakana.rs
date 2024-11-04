@@ -216,6 +216,9 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             ('チ', Some('ュ')) => Some("cu"),
             ('チ', Some('ェ')) => Some("ce"),
             ('チ', Some('ョ')) => Some("co"),
+            ('オ', Some('イ')) => Some("oy"),
+            ('エ', Some('イ')) => Some("ey"),
+            ('ウ', Some('イ')) => Some("uy"),
             _ => None,
         };
 
