@@ -201,7 +201,7 @@ fn test_convert_latn_to_cyrl() {
 #[test]
 fn test_convert_cyrl_to_latn() {
     for case in CASES.iter() {
-        assert_eq!(convert_cyrl_to_latn(&case.cyrl), case.latn_lossy.to_owned());
+        assert_eq!(convert_cyrl_to_latn(&case.cyrl), case.latn.to_owned());
     }
 
     for (_, _, _, cyrl, _, latn) in &TEST_CASES {
