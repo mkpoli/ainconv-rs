@@ -19,7 +19,9 @@ use crate::{conversion::latin::CONSONANTS, syllable::separate};
 /// assert_eq!(kana, "アイヌ");
 /// ```
 pub fn convert_latn_to_kana(latn: &str) -> String {
-    let syllables = separate(latn);
+    let latn = latn.replace("=", "");
+
+    let syllables = separate(&latn);
 
     let mut result = String::new();
 
