@@ -25,8 +25,8 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
 
     let mut result = String::new();
 
-    for (i, syllable) in syllables.iter().enumerate() {
-        let next_syllable = syllables.get(i + 1);
+    for syllable in syllables.iter() {
+        // println!("syllable {}", syllable);
         if syllable.len() == 0 {
             continue;
         }
@@ -119,6 +119,8 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
         };
         result.push_str(converted_remains);
 
+        let vowel = remains.chars().last();
+
         let converted_coda = {
             match coda {
                 "w" => "ゥ",
@@ -130,38 +132,29 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
                 "t" => "ッ",
                 "T" => "ㇳ",
                 "k" => "ㇰ",
-                "r" => match next_syllable {
-                    Some(next) => match next.chars().next() {
-                        Some('a') => "ㇻ",
-                        Some('i') => "ㇼ",
-                        Some('u') => "ㇽ",
-                        Some('e') => "ㇾ",
-                        Some('o') => "ㇿ",
-                        _ => "ㇽ",
-                    },
-                    None => "ㇽ",
+                "r" => match vowel {
+                    Some('a') => "ㇻ",
+                    Some('i') => "ㇼ",
+                    Some('u') => "ㇽ",
+                    Some('e') => "ㇾ",
+                    Some('o') => "ㇿ",
+                    _ => "ㇽ",
                 },
-                "h" => match next_syllable {
-                    Some(next) => match next.chars().next() {
-                        Some('a') => "ㇵ",
-                        Some('i') => "ㇶ",
-                        Some('u') => "ㇷ",
-                        Some('e') => "ㇸ",
-                        Some('o') => "ㇹ",
-                        _ => "ㇷ",
-                    },
-                    None => "ㇷ",
+                "h" => match vowel {
+                    Some('a') => "ㇵ",
+                    Some('i') => "ㇶ",
+                    Some('u') => "ㇷ",
+                    Some('e') => "ㇸ",
+                    Some('o') => "ㇹ",
+                    _ => "ㇷ",
                 },
-                "x" => match next_syllable {
-                    Some(next) => match next.chars().next() {
-                        Some('a') => "ㇵ",
-                        Some('i') => "ㇶ",
-                        Some('u') => "ㇷ",
-                        Some('e') => "ㇸ",
-                        Some('o') => "ㇹ",
-                        _ => "ㇷ",
-                    },
-                    None => "ㇷ",
+                "x" => match vowel {
+                    Some('a') => "ㇵ",
+                    Some('i') => "ㇶ",
+                    Some('u') => "ㇷ",
+                    Some('e') => "ㇸ",
+                    Some('o') => "ㇹ",
+                    _ => "ㇷ",
                 },
                 _ => coda,
             }
