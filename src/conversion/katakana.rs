@@ -171,6 +171,7 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
         .replace("ㇴ", "ン")
         .replace("ヱ", "ウェ")
         .replace("ヰ", "ウィ")
+        .replace("ヲ", "ウォ")
 }
 
 /// Convert Katakana to romanized Ainu
