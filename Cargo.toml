@@ -14,3 +14,6 @@ license = "MIT"
 lazy_static = "1.5.0"
 serde = { version = "1.0.214", features = ["derive"] }
 serde_json = "1.0.132"
+
+[dependencies]
+unicode-normalization = "0.1.24"
