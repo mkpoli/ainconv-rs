@@ -2,6 +2,7 @@
 use crate::conversion::latin::CONSONANTS;
 use crate::syllable::separate;
 use crate::util::{remove_acute_accent, IsLetter, SplitIntoWords};
+use unicode_normalization::UnicodeNormalization;
 
 /// Convert romanized Ainu to Katakana
 ///
@@ -194,7 +195,15 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
 pub fn convert_kana_to_latn(kana: &str) -> String {
     fn convert_word(word: &str) -> String {
         let mut result: Vec<String> = Vec::new();
-        let mut chars = word.chars().peekable();
+        let mut chars = word
+            .chars()
+            .map(|c| match c {
+                '゜' | 'ﾟ' => '\u{309A}',
+                '゛' | 'ﾞ' => '\u{3099}',
+                _ => c,
+            })
+            .nfc()
+            .peekable();
         while let Some(current_char) = chars.next() {
             let next_char = chars.peek();
 
@@ -301,6 +310,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
                 'ﾙ' => Some("r"),
                 'ﾚ' => Some("r"),
                 'ﾛ' => Some("r"),
+                'ﾝ' => Some("n"),
                 'ㇺ' => Some("m"),
                 'ㇴ' => Some("n"),
                 'ゥ' => Some("w"),
@@ -323,6 +333,60 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
                 'ㇾ' => Some("r"),
                 'ㇿ' => Some("r"),
                 '　' => Some(" "),
+                'あ' => Some("a"),
+                'い' => Some("i"),
+                'う' => Some("u"),
+                'え' => Some("e"),
+                'お' => Some("o"),
+                'か' => Some("ka"),
+                'き' => Some("ki"),
+                'く' => Some("ku"),
+                'け' => Some("ke"),
+                'こ' => Some("ko"),
+                'さ' => Some("sa"),
+                'し' => Some("si"),
+                'す' => Some("su"),
+                'せ' => Some("se"),
+                'そ' => Some("so"),
+                'た' => Some("ta"),
+                'ち' => Some("ci"),
+                'つ' => Some("tu"),
+                'て' => Some("te"),
+                'と' => Some("to"),
+                'な' => Some("na"),
+                'に' => Some("ni"),
+                'ぬ' => Some("nu"),
+                'ね' => Some("ne"),
+                'の' => Some("no"),
+                'は' => Some("ha"),
+                'ひ' => Some("hi"),
+                'ふ' => Some("hu"),
+                'へ' => Some("he"),
+                'ほ' => Some("ho"),
+                'ぱ' => Some("pa"),
+                'ぴ' => Some("pi"),
+                'ぷ' => Some("pu"),
+                'ぺ' => Some("pe"),
+                'ぽ' => Some("po"),
+                'ま' => Some("ma"),
+                'み' => Some("mi"),
+                'む' => Some("mu"),
+                'め' => Some("me"),
+                'も' => Some("mo"),
+                'や' => Some("ya"),
+                'ゆ' => Some("yu"),
+                'よ' => Some("yo"),
+                'ら' => Some("ra"),
+                'り' => Some("ri"),
+                'る' => Some("ru"),
+                'れ' => Some("re"),
+                'ろ' => Some("ro"),
+                'わ' => Some("wa"),
+                'ゐ' => Some("wi"),
+                'ゑ' => Some("we"),
+                'を' => Some("wo"),
+                'ん' => Some("n"),
+                'っ' => Some("t"),
                 _ => None,
             };
 
