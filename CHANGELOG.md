@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Chore
 
 - Added [CHANGELOG.md](CHANGELOG.md).
+- Added [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## [0.1.2] - 2024-07-22
 
