@@ -25,6 +25,7 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
     fn convert_word(word: &str) -> String {
         let latn = word.replace("=", "");
         let latn = remove_acute_accent(&latn);
+        let latn = latn.to_ascii_lowercase();
 
         let syllables = separate(&latn);
 
