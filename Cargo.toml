@@ -1,6 +1,6 @@
 [package]
 name = "ainconv"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["mkpoli <mkpoli@mkpo.li>"]
 description = "Converts Ainu words between different scripts (Katakana, Latin, Cyrillic)"
@@ -9,3 +9,11 @@ repository = "https://github.com/mkpoli/ainconv-rs"
 keywords = ["ainu", "converter", "script", "language", "text"]
 readme = "README.md"
 license = "MIT"
+
+[dev-dependencies]
+lazy_static = "1.5.0"
+serde = { version = "1.0.214", features = ["derive"] }
+serde_json = "1.0.132"
+
+[dependencies]
+unicode-normalization = "0.1.24"

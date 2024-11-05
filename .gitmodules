@@ -1,0 +1,3 @@
+[submodule "tests/cases"]
+	path = tests/cases
+	url = https://github.com/mkpoli/ainconv-tests
