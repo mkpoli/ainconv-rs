@@ -192,13 +192,12 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
 /// assert_eq!(latn, "ainu");
 /// ```
 pub fn convert_kana_to_latn(kana: &str) -> String {
-    let mut result = String::new();
+    let mut result: Vec<String> = Vec::new();
     let mut chars = kana.chars().peekable();
-
     while let Some(current_char) = chars.next() {
         let next_char = chars.peek();
 
-        let converted_diagraph: Option<&str> = match (current_char, next_char) {
+        let converted_digraph: Option<&str> = match (current_char, next_char) {
             // ('ア', Some('イ')) => Some("ay"),
             // ('ア', Some('ウ')) => Some("aw"),
             // ('ア', Some('エ')) => Some("ay"),
@@ -222,8 +221,8 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             _ => None,
         };
 
-        if let Some(diagraph) = converted_diagraph {
-            result.push_str(diagraph);
+        if let Some(digraph) = converted_digraph {
+            result.push(digraph.to_owned());
             chars.next();
             continue;
         }
@@ -303,10 +302,34 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
             _ => None,
         };
         match converted {
-            Some(c) => result.push_str(c),
-            None => result.push(current_char),
+            Some(c) => result.push(c.to_owned()),
+            None => {
+                result.push(current_char.to_string());
+            }
         }
     }
 
-    result
+    let joined = result.join("’");
+    fn is_vowel(c: char) -> bool {
+        matches!(c, 'a' | 'e' | 'i' | 'o' | 'u')
+    }
+
+    // let joined = result.replace("'", "’");
+    let mut final_result = Vec::new();
+
+    for (i, char) in joined.chars().enumerate() {
+        if char == '’' {
+            if i > 0 && is_vowel(joined.chars().nth(i - 1).unwrap()) {
+                // If the previous character is a vowel, remove the apostrophe
+                continue;
+            }
+            if i < joined.len() - 1 && !is_vowel(joined.chars().nth(i + 1).unwrap()) {
+                // If the next character is not a vowel, remove the apostrophe
+                continue;
+            }
+        }
+        final_result.push(char);
+    }
+
+    final_result.iter().collect()
 }
