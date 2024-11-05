@@ -22,157 +22,172 @@ use unicode_normalization::UnicodeNormalization;
 /// assert_eq!(kana, "アイヌ");
 /// ```
 pub fn convert_latn_to_kana(latn: &str) -> String {
-    let latn = latn.replace("=", "");
-    let latn = remove_acute_accent(&latn);
+    fn convert_word(word: &str) -> String {
+        let latn = word.replace("=", "");
+        let latn = remove_acute_accent(&latn);
 
-    let syllables = separate(&latn);
+        let syllables = separate(&latn);
 
-    let mut result = String::new();
+        let mut result = String::new();
 
-    for syllable in syllables.iter() {
-        // println!("syllable {}", syllable);
-        if syllable.len() == 0 {
-            continue;
+        for syllable in syllables.iter() {
+            // println!("syllable {}", syllable);
+            if syllable.len() == 0 {
+                continue;
+            }
+
+            // V => (V, _)
+            // VC => (V, C)
+            // CVC => (CV, C)
+
+            let last_char = syllable.chars().last().unwrap();
+
+            let (remains, coda) = if CONSONANTS.contains(last_char) {
+                let (remains, coda) = syllable.split_at(syllable.len() - 1);
+                (remains, coda)
+            } else {
+                (syllable.as_str(), "")
+            };
+
+            let converted_remains = match remains {
+                "a" => "ア",
+                "i" => "イ",
+                "u" => "ウ",
+                "e" => "エ",
+                "o" => "オ",
+                "'a" => "ア",
+                "'i" => "イ",
+                "'u" => "ウ",
+                "'e" => "エ",
+                "'o" => "オ",
+                "’a" => "ア",
+                "’i" => "イ",
+                "’u" => "ウ",
+                "’e" => "エ",
+                "’o" => "オ",
+                "ka" => "カ",
+                "ki" => "キ",
+                "ku" => "ク",
+                "ke" => "ケ",
+                "ko" => "コ",
+                "sa" => "サ",
+                "si" => "シ",
+                "su" => "ス",
+                "se" => "セ",
+                "so" => "ソ",
+                "ta" => "タ",
+                "tu" => "ト゚",
+                "te" => "テ",
+                "to" => "ト",
+                "ca" => "チャ",
+                "ci" => "チ",
+                "cu" => "チュ",
+                "ce" => "チェ",
+                "co" => "チョ",
+                "na" => "ナ",
+                "ni" => "ニ",
+                "nu" => "ヌ",
+                "ne" => "ネ",
+                "no" => "ノ",
+                "ha" => "ハ",
+                "hi" => "ヒ",
+                "hu" => "フ",
+                "he" => "ヘ",
+                "ho" => "ホ",
+                "pa" => "パ",
+                "pi" => "ピ",
+                "pu" => "プ",
+                "pe" => "ペ",
+                "po" => "ポ",
+                "ma" => "マ",
+                "mi" => "ミ",
+                "mu" => "ム",
+                "me" => "メ",
+                "mo" => "モ",
+                "ya" => "ヤ",
+                "yi" => "イ",
+                "yu" => "ユ",
+                "ye" => "イェ",
+                "yo" => "ヨ",
+                "ra" => "ラ",
+                "ri" => "リ",
+                "ru" => "ル",
+                "re" => "レ",
+                "ro" => "ロ",
+                "wa" => "ワ",
+                "wi" => "ヰ",
+                "we" => "ヱ",
+                "wo" => "ヲ",
+                "nn" => "ン",
+                "tt" => "ッ",
+                _ => syllable,
+            };
+            result.push_str(converted_remains);
+
+            let vowel = remains.chars().last();
+
+            let converted_coda = {
+                match coda {
+                    "w" => "ゥ",
+                    "y" => "ィ",
+                    "m" => "ㇺ",
+                    "n" => "ㇴ",
+                    "s" => "ㇱ",
+                    "p" => "ㇷ゚",
+                    "t" => "ッ",
+                    "T" => "ㇳ",
+                    "k" => "ㇰ",
+                    "r" => match vowel {
+                        Some('a') => "ㇻ",
+                        Some('i') => "ㇼ",
+                        Some('u') => "ㇽ",
+                        Some('e') => "ㇾ",
+                        Some('o') => "ㇿ",
+                        _ => "ㇽ",
+                    },
+                    "h" => match vowel {
+                        Some('a') => "ㇵ",
+                        Some('i') => "ㇶ",
+                        Some('u') => "ㇷ",
+                        Some('e') => "ㇸ",
+                        Some('o') => "ㇹ",
+                        _ => "ㇷ",
+                    },
+                    "x" => match vowel {
+                        Some('a') => "ㇵ",
+                        Some('i') => "ㇶ",
+                        Some('u') => "ㇷ",
+                        Some('e') => "ㇸ",
+                        Some('o') => "ㇹ",
+                        _ => "ㇷ",
+                    },
+                    _ => coda,
+                }
+            };
+            result.push_str(converted_coda);
         }
 
-        // V => (V, _)
-        // VC => (V, C)
-        // CVC => (CV, C)
-
-        let last_char = syllable.chars().last().unwrap();
-
-        let (remains, coda) = if CONSONANTS.contains(last_char) {
-            let (remains, coda) = syllable.split_at(syllable.len() - 1);
-            (remains, coda)
-        } else {
-            (syllable.as_str(), "")
-        };
-
-        let converted_remains = match remains {
-            "a" => "ア",
-            "i" => "イ",
-            "u" => "ウ",
-            "e" => "エ",
-            "o" => "オ",
-            "'a" => "ア",
-            "'i" => "イ",
-            "'u" => "ウ",
-            "'e" => "エ",
-            "'o" => "オ",
-            "’a" => "ア",
-            "’i" => "イ",
-            "’u" => "ウ",
-            "’e" => "エ",
-            "’o" => "オ",
-            "ka" => "カ",
-            "ki" => "キ",
-            "ku" => "ク",
-            "ke" => "ケ",
-            "ko" => "コ",
-            "sa" => "サ",
-            "si" => "シ",
-            "su" => "ス",
-            "se" => "セ",
-            "so" => "ソ",
-            "ta" => "タ",
-            "tu" => "ト゚",
-            "te" => "テ",
-            "to" => "ト",
-            "ca" => "チャ",
-            "ci" => "チ",
-            "cu" => "チュ",
-            "ce" => "チェ",
-            "co" => "チョ",
-            "na" => "ナ",
-            "ni" => "ニ",
-            "nu" => "ヌ",
-            "ne" => "ネ",
-            "no" => "ノ",
-            "ha" => "ハ",
-            "hi" => "ヒ",
-            "hu" => "フ",
-            "he" => "ヘ",
-            "ho" => "ホ",
-            "pa" => "パ",
-            "pi" => "ピ",
-            "pu" => "プ",
-            "pe" => "ペ",
-            "po" => "ポ",
-            "ma" => "マ",
-            "mi" => "ミ",
-            "mu" => "ム",
-            "me" => "メ",
-            "mo" => "モ",
-            "ya" => "ヤ",
-            "yi" => "イ",
-            "yu" => "ユ",
-            "ye" => "イェ",
-            "yo" => "ヨ",
-            "ra" => "ラ",
-            "ri" => "リ",
-            "ru" => "ル",
-            "re" => "レ",
-            "ro" => "ロ",
-            "wa" => "ワ",
-            "wi" => "ヰ",
-            "we" => "ヱ",
-            "wo" => "ヲ",
-            "nn" => "ン",
-            "tt" => "ッ",
-            _ => syllable,
-        };
-        result.push_str(converted_remains);
-
-        let vowel = remains.chars().last();
-
-        let converted_coda = {
-            match coda {
-                "w" => "ゥ",
-                "y" => "ィ",
-                "m" => "ㇺ",
-                "n" => "ㇴ",
-                "s" => "ㇱ",
-                "p" => "ㇷ゚",
-                "t" => "ッ",
-                "T" => "ㇳ",
-                "k" => "ㇰ",
-                "r" => match vowel {
-                    Some('a') => "ㇻ",
-                    Some('i') => "ㇼ",
-                    Some('u') => "ㇽ",
-                    Some('e') => "ㇾ",
-                    Some('o') => "ㇿ",
-                    _ => "ㇽ",
-                },
-                "h" => match vowel {
-                    Some('a') => "ㇵ",
-                    Some('i') => "ㇶ",
-                    Some('u') => "ㇷ",
-                    Some('e') => "ㇸ",
-                    Some('o') => "ㇹ",
-                    _ => "ㇷ",
-                },
-                "x" => match vowel {
-                    Some('a') => "ㇵ",
-                    Some('i') => "ㇶ",
-                    Some('u') => "ㇷ",
-                    Some('e') => "ㇸ",
-                    Some('o') => "ㇹ",
-                    _ => "ㇷ",
-                },
-                _ => coda,
-            }
-        };
-        result.push_str(converted_coda);
+        result
+            .replace('ィ', "イ")
+            .replace('ゥ', "ウ")
+            .replace("ㇴ", "ン")
+            .replace("ヱ", "ウェ")
+            .replace("ヰ", "ウィ")
+            .replace("ヲ", "ウォ")
+            .replace("’", "")
     }
 
-    result
-        .replace('ィ', "イ")
-        .replace('ゥ', "ウ")
-        .replace("ㇴ", "ン")
-        .replace("ヱ", "ウェ")
-        .replace("ヰ", "ウィ")
-        .replace("ヲ", "ウォ")
+    latn.split_into_words()
+        .into_iter()
+        .map(|word| {
+            if word.chars().all(|c| c.is_ainu_letter()) {
+                convert_word(&word)
+            } else {
+                word.to_owned()
+            }
+        })
+        .collect::<Vec<String>>()
+        .join("")
 }
 
 /// Convert Katakana to romanized Ainu
