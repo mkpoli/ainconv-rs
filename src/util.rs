@@ -103,7 +103,8 @@ pub trait IsLetter {
 
 impl IsLetter for char {
     fn is_ainu_letter(&self) -> bool {
-        self.is_alphabetic() || "\u{3099}\u{309A}\u{309B}\u{309C}\u{FF9E}\u{FF9F}".contains(*self)
+        self.is_alphabetic()
+            || "\u{3099}\u{309A}\u{309B}\u{309C}\u{FF9E}\u{FF9F}’'=".contains(*self)
     }
 }
 
