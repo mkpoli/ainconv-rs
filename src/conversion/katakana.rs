@@ -211,6 +211,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
                 // ('オ', Some('イ')) => Some("oy"),
                 // ('ウ', Some('イ')) => Some("uy"),
                 ('ㇷ', Some('゚')) => Some("p"),
+                ('ﾌ', Some('\u{ff9f}')) => Some("p"),
                 ('ト', Some('゚')) => Some("tu"),
                 ('チ', Some('ャ')) => Some("ca"),
                 ('チ', Some('ュ')) => Some("cu"),
@@ -279,6 +280,27 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
                 'ワ' => Some("wa"),
                 'ヲ' => Some("wo"),
                 'ン' => Some("n"),
+                'ﾑ' => Some("m"),
+                'ﾇ' => Some("n"),
+                'ｳ' => Some("w"),
+                'ｲ' => Some("y"),
+                'ﾌ' => Some("h"),
+                'ｼ' => Some("s"),
+                'ﾂ' => Some("t"),
+                'ﾄ' => Some("t"),
+                'ｸ' => Some("k"),
+                'ﾊ' => Some("x"),
+                'ﾋ' => Some("x"),
+                'ﾍ' => Some("x"),
+                'ﾎ' => Some("x"),
+                'ｱ' => Some("a"),
+                'ｴ' => Some("e"),
+                'ｵ' => Some("o"),
+                'ﾗ' => Some("r"),
+                'ﾘ' => Some("r"),
+                'ﾙ' => Some("r"),
+                'ﾚ' => Some("r"),
+                'ﾛ' => Some("r"),
                 'ㇺ' => Some("m"),
                 'ㇴ' => Some("n"),
                 'ゥ' => Some("w"),
@@ -300,8 +322,10 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
                 'ㇽ' => Some("r"),
                 'ㇾ' => Some("r"),
                 'ㇿ' => Some("r"),
+                '　' => Some(" "),
                 _ => None,
             };
+
             match converted {
                 Some(c) => result.push(c.to_owned()),
                 None => {
@@ -314,7 +338,6 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
         fn is_vowel(c: char) -> bool {
             matches!(c, 'a' | 'e' | 'i' | 'o' | 'u')
         }
-
         // let joined = result.replace("'", "’");
         let mut final_result = Vec::new();
 
