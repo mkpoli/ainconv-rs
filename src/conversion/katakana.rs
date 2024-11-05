@@ -348,7 +348,6 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
                 'ㇽ' => Some("r"),
                 'ㇾ' => Some("r"),
                 'ㇿ' => Some("r"),
-                '　' => Some(" "),
                 'あ' => Some("a"),
                 'い' => Some("i"),
                 'う' => Some("u"),
@@ -418,6 +417,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
         fn is_vowel(c: char) -> bool {
             matches!(c, 'a' | 'e' | 'i' | 'o' | 'u')
         }
+
         // let joined = result.replace("'", "’");
         let mut final_result = Vec::new();
 
@@ -445,6 +445,21 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
                 convert_word(&word)
             } else {
                 word.to_owned()
+                    .chars()
+                    .map(|c| match c {
+                        '。' => ". ".into(),
+                        '「' => " \"".into(),
+                        '」' => "\" ".into(),
+                        '『' => " '".into(),
+                        '』' => "' ".into(),
+                        '！' => "! ".into(),
+                        '？' => "? ".into(),
+                        '、' => ", ".into(),
+                        '　' => " ".into(),
+                        _ => c.to_string(),
+                    })
+                    .collect::<Vec<String>>()
+                    .join("")
             }
         })
         .collect::<Vec<String>>()
