@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added apostrophe between consonant and vowel.
 - Added support for diagraphed `-ey`, `-oy`, `-uy`.
 - Added apostrophe before consonant in Latin.
+- Added support for missing half-width katakana `ﾝ` support.
+- Added support for non-combining modifiers.
+- Added support for hiragana.
 
 ### Fixed
 
