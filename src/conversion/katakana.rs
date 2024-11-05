@@ -1,7 +1,7 @@
 // See notice in the TypeScript version https://github.com/mkpoli/ainconv/blob/main/src/conversion/katakana.ts
 use crate::conversion::latin::CONSONANTS;
 use crate::syllable::separate;
-use crate::util::remove_acute_accent;
+use crate::util::{remove_acute_accent, IsLetter, SplitIntoWords};
 
 /// Convert romanized Ainu to Katakana
 ///
@@ -192,144 +192,158 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
 /// assert_eq!(latn, "ainu");
 /// ```
 pub fn convert_kana_to_latn(kana: &str) -> String {
-    let mut result: Vec<String> = Vec::new();
-    let mut chars = kana.chars().peekable();
-    while let Some(current_char) = chars.next() {
-        let next_char = chars.peek();
+    fn convert_word(word: &str) -> String {
+        let mut result: Vec<String> = Vec::new();
+        let mut chars = word.chars().peekable();
+        while let Some(current_char) = chars.next() {
+            let next_char = chars.peek();
 
-        let converted_digraph: Option<&str> = match (current_char, next_char) {
-            // ('ア', Some('イ')) => Some("ay"),
-            // ('ア', Some('ウ')) => Some("aw"),
-            // ('ア', Some('エ')) => Some("ay"),
-            ('イ', Some('ェ')) => Some("ye"),
-            ('ウ', Some('ェ')) => Some("we"),
-            ('ウ', Some('ィ')) => Some("wi"),
-            ('ウ', Some('ォ')) => Some("wo"),
-            ('ト', Some('ゥ')) => Some("tu"),
-            // ('エ', Some('イ')) => Some("ey"),
-            // ('オ', Some('イ')) => Some("oy"),
-            // ('ウ', Some('イ')) => Some("uy"),
-            ('ㇷ', Some('゚')) => Some("p"),
-            ('ト', Some('゚')) => Some("tu"),
-            ('チ', Some('ャ')) => Some("ca"),
-            ('チ', Some('ュ')) => Some("cu"),
-            ('チ', Some('ェ')) => Some("ce"),
-            ('チ', Some('ョ')) => Some("co"),
-            ('オ', Some('イ')) => Some("oy"),
-            ('エ', Some('イ')) => Some("ey"),
-            ('ウ', Some('イ')) => Some("uy"),
-            _ => None,
-        };
+            let converted_digraph: Option<&str> = match (current_char, next_char) {
+                // ('ア', Some('イ')) => Some("ay"),
+                // ('ア', Some('ウ')) => Some("aw"),
+                // ('ア', Some('エ')) => Some("ay"),
+                ('イ', Some('ェ')) => Some("ye"),
+                ('ウ', Some('ェ')) => Some("we"),
+                ('ウ', Some('ィ')) => Some("wi"),
+                ('ウ', Some('ォ')) => Some("wo"),
+                ('ト', Some('ゥ')) => Some("tu"),
+                // ('エ', Some('イ')) => Some("ey"),
+                // ('オ', Some('イ')) => Some("oy"),
+                // ('ウ', Some('イ')) => Some("uy"),
+                ('ㇷ', Some('゚')) => Some("p"),
+                ('ト', Some('゚')) => Some("tu"),
+                ('チ', Some('ャ')) => Some("ca"),
+                ('チ', Some('ュ')) => Some("cu"),
+                ('チ', Some('ェ')) => Some("ce"),
+                ('チ', Some('ョ')) => Some("co"),
+                ('オ', Some('イ')) => Some("oy"),
+                ('エ', Some('イ')) => Some("ey"),
+                ('ウ', Some('イ')) => Some("uy"),
+                _ => None,
+            };
 
-        if let Some(digraph) = converted_digraph {
-            result.push(digraph.to_owned());
-            chars.next();
-            continue;
-        }
-
-        let converted = match current_char {
-            'ア' => Some("a"),
-            'イ' => Some("i"),
-            'ウ' => Some("u"),
-            'エ' => Some("e"),
-            'オ' => Some("o"),
-            'カ' => Some("ka"),
-            'キ' => Some("ki"),
-            'ク' => Some("ku"),
-            'ケ' => Some("ke"),
-            'コ' => Some("ko"),
-            'サ' => Some("sa"),
-            'シ' => Some("si"),
-            'ス' => Some("su"),
-            'セ' => Some("se"),
-            'ソ' => Some("so"),
-            'タ' => Some("ta"),
-            'チ' => Some("ci"),
-            'テ' => Some("te"),
-            'ト' => Some("to"),
-            'ナ' => Some("na"),
-            'ニ' => Some("ni"),
-            'ヌ' => Some("nu"),
-            'ネ' => Some("ne"),
-            'ノ' => Some("no"),
-            'ハ' => Some("ha"),
-            'ヒ' => Some("hi"),
-            'フ' => Some("hu"),
-            'ヘ' => Some("he"),
-            'ホ' => Some("ho"),
-            'パ' => Some("pa"),
-            'ピ' => Some("pi"),
-            'プ' => Some("pu"),
-            'ペ' => Some("pe"),
-            'ポ' => Some("po"),
-            'マ' => Some("ma"),
-            'ミ' => Some("mi"),
-            'ム' => Some("mu"),
-            'メ' => Some("me"),
-            'モ' => Some("mo"),
-            'ヤ' => Some("ya"),
-            'ユ' => Some("yu"),
-            'ヨ' => Some("yo"),
-            'ラ' => Some("ra"),
-            'リ' => Some("ri"),
-            'ル' => Some("ru"),
-            'レ' => Some("re"),
-            'ロ' => Some("ro"),
-            'ワ' => Some("wa"),
-            'ヲ' => Some("wo"),
-            'ン' => Some("n"),
-            'ㇺ' => Some("m"),
-            'ㇴ' => Some("n"),
-            'ゥ' => Some("w"),
-            'ィ' => Some("y"),
-            'ㇷ' => Some("h"),
-            'ㇱ' => Some("s"),
-            'ッ' => Some("t"),
-            'ㇳ' => Some("t"),
-            'ㇰ' => Some("k"),
-            'ㇵ' => Some("x"),
-            'ㇶ' => Some("x"),
-            'ㇸ' => Some("x"),
-            'ㇹ' => Some("x"),
-            'ァ' => Some("a"),
-            'ェ' => Some("e"),
-            'ォ' => Some("o"),
-            'ㇻ' => Some("r"),
-            'ㇼ' => Some("r"),
-            'ㇽ' => Some("r"),
-            'ㇾ' => Some("r"),
-            'ㇿ' => Some("r"),
-            _ => None,
-        };
-        match converted {
-            Some(c) => result.push(c.to_owned()),
-            None => {
-                result.push(current_char.to_string());
-            }
-        }
-    }
-
-    let joined = result.join("’");
-    fn is_vowel(c: char) -> bool {
-        matches!(c, 'a' | 'e' | 'i' | 'o' | 'u')
-    }
-
-    // let joined = result.replace("'", "’");
-    let mut final_result = Vec::new();
-
-    for (i, char) in joined.chars().enumerate() {
-        if char == '’' {
-            if i > 0 && is_vowel(joined.chars().nth(i - 1).unwrap()) {
-                // If the previous character is a vowel, remove the apostrophe
+            if let Some(digraph) = converted_digraph {
+                result.push(digraph.to_owned());
+                chars.next();
                 continue;
             }
-            if i < joined.len() - 1 && !is_vowel(joined.chars().nth(i + 1).unwrap()) {
-                // If the next character is not a vowel, remove the apostrophe
-                continue;
+
+            let converted = match current_char {
+                'ア' => Some("a"),
+                'イ' => Some("i"),
+                'ウ' => Some("u"),
+                'エ' => Some("e"),
+                'オ' => Some("o"),
+                'カ' => Some("ka"),
+                'キ' => Some("ki"),
+                'ク' => Some("ku"),
+                'ケ' => Some("ke"),
+                'コ' => Some("ko"),
+                'サ' => Some("sa"),
+                'シ' => Some("si"),
+                'ス' => Some("su"),
+                'セ' => Some("se"),
+                'ソ' => Some("so"),
+                'タ' => Some("ta"),
+                'チ' => Some("ci"),
+                'テ' => Some("te"),
+                'ト' => Some("to"),
+                'ナ' => Some("na"),
+                'ニ' => Some("ni"),
+                'ヌ' => Some("nu"),
+                'ネ' => Some("ne"),
+                'ノ' => Some("no"),
+                'ハ' => Some("ha"),
+                'ヒ' => Some("hi"),
+                'フ' => Some("hu"),
+                'ヘ' => Some("he"),
+                'ホ' => Some("ho"),
+                'パ' => Some("pa"),
+                'ピ' => Some("pi"),
+                'プ' => Some("pu"),
+                'ペ' => Some("pe"),
+                'ポ' => Some("po"),
+                'マ' => Some("ma"),
+                'ミ' => Some("mi"),
+                'ム' => Some("mu"),
+                'メ' => Some("me"),
+                'モ' => Some("mo"),
+                'ヤ' => Some("ya"),
+                'ユ' => Some("yu"),
+                'ヨ' => Some("yo"),
+                'ラ' => Some("ra"),
+                'リ' => Some("ri"),
+                'ル' => Some("ru"),
+                'レ' => Some("re"),
+                'ロ' => Some("ro"),
+                'ワ' => Some("wa"),
+                'ヲ' => Some("wo"),
+                'ン' => Some("n"),
+                'ㇺ' => Some("m"),
+                'ㇴ' => Some("n"),
+                'ゥ' => Some("w"),
+                'ィ' => Some("y"),
+                'ㇷ' => Some("h"),
+                'ㇱ' => Some("s"),
+                'ッ' => Some("t"),
+                'ㇳ' => Some("t"),
+                'ㇰ' => Some("k"),
+                'ㇵ' => Some("x"),
+                'ㇶ' => Some("x"),
+                'ㇸ' => Some("x"),
+                'ㇹ' => Some("x"),
+                'ァ' => Some("a"),
+                'ェ' => Some("e"),
+                'ォ' => Some("o"),
+                'ㇻ' => Some("r"),
+                'ㇼ' => Some("r"),
+                'ㇽ' => Some("r"),
+                'ㇾ' => Some("r"),
+                'ㇿ' => Some("r"),
+                _ => None,
+            };
+            match converted {
+                Some(c) => result.push(c.to_owned()),
+                None => {
+                    result.push(current_char.to_string());
+                }
             }
         }
-        final_result.push(char);
+
+        let joined = result.join("’");
+        fn is_vowel(c: char) -> bool {
+            matches!(c, 'a' | 'e' | 'i' | 'o' | 'u')
+        }
+
+        // let joined = result.replace("'", "’");
+        let mut final_result = Vec::new();
+
+        for (i, char) in joined.chars().enumerate() {
+            if char == '’' {
+                if i > 0 && is_vowel(joined.chars().nth(i - 1).unwrap()) {
+                    // If the previous character is a vowel, remove the apostrophe
+                    continue;
+                }
+                if i < joined.len() - 1 && !is_vowel(joined.chars().nth(i + 1).unwrap()) {
+                    // If the next character is not a vowel, remove the apostrophe
+                    continue;
+                }
+            }
+            final_result.push(char);
+        }
+
+        final_result.iter().collect()
     }
 
-    final_result.iter().collect()
+    kana.split_into_words()
+        .into_iter()
+        .map(|word| {
+            if word.chars().all(|c| c.is_ainu_letter()) {
+                convert_word(&word)
+            } else {
+                word.to_owned()
+            }
+        })
+        .collect::<Vec<String>>()
+        .join("")
 }
