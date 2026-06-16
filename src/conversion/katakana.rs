@@ -123,6 +123,7 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
                 "wo" => "ヲ",
                 "nn" => "ン",
                 "tt" => "ッ",
+                "" => "",
                 _ => syllable,
             };
             result.push_str(converted_remains);
@@ -483,8 +484,8 @@ mod tests {
 
     #[test]
     fn vowelless_input_does_not_panic() {
-        let _ = convert_latn_to_kana("k");
-        let _ = convert_latn_to_kana("n");
-        let _ = convert_latn_to_kana("");
+        assert_eq!(convert_latn_to_kana("k"), "ㇰ");
+        assert_eq!(convert_latn_to_kana("n"), "ン");
+        assert_eq!(convert_latn_to_kana(""), "");
     }
 }
