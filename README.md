@@ -66,9 +66,20 @@ three ASCII full stops `...`:
 ```rust
 use ainconv::{convert_kana_to_latn, convert_kana_to_latn_with_options, ConversionOptions};
 
-let opts = ConversionOptions { ellipsis_to_ascii: true };
+let opts = ConversionOptions { ellipsis_to_ascii: true, ..Default::default() };
 println!("{}", convert_kana_to_latn_with_options("…", &opts)); // "..."
 println!("{}", convert_kana_to_latn("…")); // "…" (unchanged)
+```
+
+`convert_latn_to_kana_with_options` likewise selects compact Katakana variant
+forms that are otherwise spelled out by default:
+
+```rust
+use ainconv::{convert_latn_to_kana, convert_latn_to_kana_with_options, ConversionOptions};
+
+let opts = ConversionOptions { use_wi: true, ..Default::default() };
+println!("{}", convert_latn_to_kana_with_options("wina", &opts)); // "ヰナ"
+println!("{}", convert_latn_to_kana("wina")); // "ウィナ"
 ```
 
 ### Extra Functionality

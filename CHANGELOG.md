@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for hiragana.
 - Added `convert_kana_to_latn_with_options` and a `ConversionOptions` struct with
   an opt-in `ellipsis_to_ascii` toggle that rewrites `…` (U+2026) to `...`.
+- Added `convert_latn_to_kana_with_options` with Katakana variant toggles
+  (`use_wi`, `use_we`, `use_wo`, `use_small_i`, `use_small_u`, `use_small_n`) on
+  `ConversionOptions`, matching the option set of the Python implementation.
 
 ### Fixed
 

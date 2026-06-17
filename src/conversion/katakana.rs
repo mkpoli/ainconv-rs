@@ -23,7 +23,26 @@ use unicode_normalization::UnicodeNormalization;
 /// assert_eq!(kana, "アイヌ");
 /// ```
 pub fn convert_latn_to_kana(latn: &str) -> String {
-    fn convert_word(word: &str) -> String {
+    convert_latn_to_kana_with_options(latn, &ConversionOptions::default())
+}
+
+/// Convert romanized Ainu to Katakana, selecting Katakana variant forms via
+/// [`ConversionOptions`].
+///
+/// This behaves exactly like [`convert_latn_to_kana`] but lets the caller keep
+/// the compact variant kana (`ヰ`/`ヱ`/`ヲ`, small `ィ`/`ゥ`, `ㇴ`) that are
+/// otherwise spelled out by default.
+///
+/// # Example
+///
+/// ```
+/// use ainconv::{convert_latn_to_kana, convert_latn_to_kana_with_options, ConversionOptions};
+/// let opts = ConversionOptions { use_wi: true, ..Default::default() };
+/// assert_eq!(convert_latn_to_kana_with_options("wina", &opts), "ヰナ");
+/// assert_eq!(convert_latn_to_kana("wina"), "ウィナ");
+/// ```
+pub fn convert_latn_to_kana_with_options(latn: &str, options: &ConversionOptions) -> String {
+    fn convert_word(word: &str, options: &ConversionOptions) -> String {
         let latn = word.replace("=", "");
         let latn = remove_acute_accent(&latn);
         let latn = latn.to_ascii_lowercase();
@@ -172,21 +191,35 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
             result.push_str(converted_coda);
         }
 
-        result
-            .replace('ィ', "イ")
-            .replace('ゥ', "ウ")
-            .replace("ㇴ", "ン")
-            .replace("ヱ", "ウェ")
-            .replace("ヰ", "ウィ")
-            .replace("ヲ", "ウォ")
-            .replace("’", "")
+        // Spell out the compact variant kana unless the caller opted to keep
+        // them. Each replacement targets a disjoint character, so order does
+        // not matter.
+        if !options.use_small_i {
+            result = result.replace('ィ', "イ");
+        }
+        if !options.use_small_u {
+            result = result.replace('ゥ', "ウ");
+        }
+        if !options.use_small_n {
+            result = result.replace('ㇴ', "ン");
+        }
+        if !options.use_wi {
+            result = result.replace('ヰ', "ウィ");
+        }
+        if !options.use_we {
+            result = result.replace('ヱ', "ウェ");
+        }
+        if !options.use_wo {
+            result = result.replace('ヲ', "ウォ");
+        }
+        result.replace('’', "")
     }
 
     latn.split_into_words()
         .into_iter()
         .map(|word| {
             if word.chars().all(|c| c.is_ainu_letter()) {
-                convert_word(&word)
+                convert_word(&word, options)
             } else {
                 word.to_owned()
             }
@@ -227,7 +260,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
 /// ```
 /// use ainconv::{convert_kana_to_latn, convert_kana_to_latn_with_options, ConversionOptions};
 /// // `…` is kept as-is by default, but can be rewritten to ASCII.
-/// let opts = ConversionOptions { ellipsis_to_ascii: true };
+/// let opts = ConversionOptions { ellipsis_to_ascii: true, ..Default::default() };
 /// assert_eq!(convert_kana_to_latn_with_options("…", &opts), "...");
 /// assert_eq!(convert_kana_to_latn("…"), "…");
 /// ```
@@ -505,6 +538,7 @@ mod tests {
     fn ellipsis_converted_when_enabled() {
         let opts = ConversionOptions {
             ellipsis_to_ascii: true,
+            ..Default::default()
         };
         assert_eq!(convert_kana_to_latn_with_options("…", &opts), "...");
         assert_eq!(convert_kana_to_latn_with_options("アイヌ…", &opts), "ainu...");
@@ -517,6 +551,43 @@ mod tests {
             convert_kana_to_latn_with_options("アイヌ…", &opts),
             convert_kana_to_latn("アイヌ…")
         );
+    }
+
+    #[test]
+    fn katakana_variants_spelled_out_by_default() {
+        assert_eq!(convert_latn_to_kana("wina"), "ウィナ");
+        assert_eq!(convert_latn_to_kana("wen"), "ウェン");
+        assert_eq!(convert_latn_to_kana("kay"), "カイ");
+        assert_eq!(convert_latn_to_kana("kew"), "ケウ");
+        assert_eq!(convert_latn_to_kana("mun"), "ムン");
+    }
+
+    #[test]
+    fn katakana_variants_kept_when_enabled() {
+        use crate::convert_latn_to_kana_with_options;
+        let wi = ConversionOptions {
+            use_wi: true,
+            ..Default::default()
+        };
+        assert_eq!(convert_latn_to_kana_with_options("wina", &wi), "ヰナ");
+
+        let small_i = ConversionOptions {
+            use_small_i: true,
+            ..Default::default()
+        };
+        assert_eq!(convert_latn_to_kana_with_options("kay", &small_i), "カィ");
+
+        let small_u = ConversionOptions {
+            use_small_u: true,
+            ..Default::default()
+        };
+        assert_eq!(convert_latn_to_kana_with_options("kew", &small_u), "ケゥ");
+
+        let small_n = ConversionOptions {
+            use_small_n: true,
+            ..Default::default()
+        };
+        assert_eq!(convert_latn_to_kana_with_options("mun", &small_n), "ムㇴ");
     }
 
     #[test]
