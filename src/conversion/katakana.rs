@@ -44,8 +44,10 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
             let last_char = syllable.chars().last().unwrap();
 
             let (remains, coda) = if CONSONANTS.contains(last_char) {
-                let (remains, coda) = syllable.split_at(syllable.len() - 1);
-                (remains, coda)
+                // Split off the final consonant at its CHARACTER boundary; a
+                // multi-byte coda (e.g. the glottal stop ’) would make
+                // `len() - 1` slice mid-character and panic.
+                syllable.split_at(syllable.len() - last_char.len_utf8())
             } else {
                 (syllable.as_str(), "")
             };
@@ -121,6 +123,7 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
                 "wo" => "ヲ",
                 "nn" => "ン",
                 "tt" => "ッ",
+                "" => "",
                 _ => syllable,
             };
             result.push_str(converted_remains);
@@ -464,4 +467,25 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
         })
         .collect::<Vec<String>>()
         .join("")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::convert_latn_to_kana;
+
+    #[test]
+    fn glottal_stop_coda_does_not_panic() {
+        // A syllable ending in the multi-byte glottal stop ’ used to slice
+        // mid-character in `split_at(len - 1)`.
+        assert_eq!(convert_latn_to_kana("ne\u{2019}"), "ネ");
+        assert_eq!(convert_latn_to_kana("po\u{2019}"), "ポ");
+        assert_eq!(convert_latn_to_kana("nispa\u{2019}"), "ニㇱパ");
+    }
+
+    #[test]
+    fn vowelless_input_does_not_panic() {
+        assert_eq!(convert_latn_to_kana("k"), "ㇰ");
+        assert_eq!(convert_latn_to_kana("n"), "ン");
+        assert_eq!(convert_latn_to_kana(""), "");
+    }
 }
