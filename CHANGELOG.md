@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for missing half-width katakana `ﾝ` support.
 - Added support for non-combining modifiers.
 - Added support for hiragana.
+- Added `convert_kana_to_latn_with_options` and a `ConversionOptions` struct with
+  an opt-in `ellipsis_to_ascii` toggle that rewrites `…` (U+2026) to `...`.
 
 ### Fixed
 
