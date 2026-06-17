@@ -15,6 +15,24 @@ pub enum Script {
     Unknown,
 }
 
+/// Options that tweak how punctuation is normalized during conversion.
+///
+/// Construct from [`Default`] and override only the toggles you need:
+///
+/// ```
+/// use ainconv::ConversionOptions;
+/// let opts = ConversionOptions { ellipsis_to_ascii: true };
+/// ```
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct ConversionOptions {
+    /// When `true`, the horizontal ellipsis `…` (U+2026) is rewritten as three
+    /// ASCII full stops `...`.
+    ///
+    /// Defaults to `false`, leaving `…` intact: it is a single, semantically
+    /// correct character, so the rewrite is opt-in.
+    pub ellipsis_to_ascii: bool,
+}
+
 mod util;
 
 mod conversion {
@@ -31,7 +49,9 @@ mod detection;
 pub use detection::detect;
 
 pub use conversion::cyrillic::{convert_cyrl_to_latn, convert_latn_to_cyrl};
-pub use conversion::katakana::{convert_kana_to_latn, convert_latn_to_kana};
+pub use conversion::katakana::{
+    convert_kana_to_latn, convert_kana_to_latn_with_options, convert_latn_to_kana,
+};
 
 pub fn convert_cyrl_to_kana(cyrl: &str) -> String {
     convert_latn_to_kana(&convert_cyrl_to_latn(cyrl))

@@ -2,6 +2,7 @@
 use crate::conversion::latin::CONSONANTS;
 use crate::syllable::separate;
 use crate::util::{remove_acute_accent, IsLetter, SplitIntoWords};
+use crate::ConversionOptions;
 use unicode_normalization::UnicodeNormalization;
 
 /// Convert romanized Ainu to Katakana
@@ -212,6 +213,25 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
 /// assert_eq!(latn, "ainu");
 /// ```
 pub fn convert_kana_to_latn(kana: &str) -> String {
+    convert_kana_to_latn_with_options(kana, &ConversionOptions::default())
+}
+
+/// Convert Katakana to romanized Ainu, tweaking punctuation handling via
+/// [`ConversionOptions`].
+///
+/// This behaves exactly like [`convert_kana_to_latn`] but lets the caller opt
+/// into normalizations that are off by default.
+///
+/// # Example
+///
+/// ```
+/// use ainconv::{convert_kana_to_latn, convert_kana_to_latn_with_options, ConversionOptions};
+/// // `…` is kept as-is by default, but can be rewritten to ASCII.
+/// let opts = ConversionOptions { ellipsis_to_ascii: true };
+/// assert_eq!(convert_kana_to_latn_with_options("…", &opts), "...");
+/// assert_eq!(convert_kana_to_latn("…"), "…");
+/// ```
+pub fn convert_kana_to_latn_with_options(kana: &str, options: &ConversionOptions) -> String {
     fn convert_word(word: &str) -> String {
         let mut result: Vec<String> = Vec::new();
         let mut chars = word
@@ -450,6 +470,7 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
                 word.to_owned()
                     .chars()
                     .map(|c| match c {
+                        '…' if options.ellipsis_to_ascii => "...".into(),
                         '。' => ". ".into(),
                         '「' => " \"".into(),
                         '」' => "\" ".into(),
@@ -471,7 +492,32 @@ pub fn convert_kana_to_latn(kana: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::convert_latn_to_kana;
+    use super::{convert_kana_to_latn, convert_kana_to_latn_with_options, convert_latn_to_kana};
+    use crate::ConversionOptions;
+
+    #[test]
+    fn ellipsis_kept_by_default() {
+        assert_eq!(convert_kana_to_latn("…"), "…");
+        assert_eq!(convert_kana_to_latn("アイヌ…"), "ainu…");
+    }
+
+    #[test]
+    fn ellipsis_converted_when_enabled() {
+        let opts = ConversionOptions {
+            ellipsis_to_ascii: true,
+        };
+        assert_eq!(convert_kana_to_latn_with_options("…", &opts), "...");
+        assert_eq!(convert_kana_to_latn_with_options("アイヌ…", &opts), "ainu...");
+    }
+
+    #[test]
+    fn default_options_match_plain_function() {
+        let opts = ConversionOptions::default();
+        assert_eq!(
+            convert_kana_to_latn_with_options("アイヌ…", &opts),
+            convert_kana_to_latn("アイヌ…")
+        );
+    }
 
     #[test]
     fn glottal_stop_coda_does_not_panic() {

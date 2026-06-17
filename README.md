@@ -56,6 +56,21 @@ println!("{}", convert_cyrl_to_kana("иранкараптэ")); // "イランカ
 println!("{}", convert_kana_to_cyrl("イランカラㇷ゚テ")); // "иранкараптэ"
 ```
 
+#### Conversion Options
+
+When converting from Katakana, some punctuation normalizations are opt-in. By
+default the horizontal ellipsis `…` (U+2026) is kept as-is, since it is the
+semantically correct single character. Pass `ConversionOptions` to rewrite it to
+three ASCII full stops `...`:
+
+```rust
+use ainconv::{convert_kana_to_latn, convert_kana_to_latn_with_options, ConversionOptions};
+
+let opts = ConversionOptions { ellipsis_to_ascii: true };
+println!("{}", convert_kana_to_latn_with_options("…", &opts)); // "..."
+println!("{}", convert_kana_to_latn("…")); // "…" (unchanged)
+```
+
 ### Extra Functionality
 
 #### Script Detection
