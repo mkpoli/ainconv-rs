@@ -18,6 +18,8 @@ Conversion between Latin and Cyrillic script are lossless, however, conversion b
 
 This is because the Katakana script used broadly for the Ainu language is intrinsically ambiguous. For example, it does not distinguish between *tow* and *tu* (both *トゥ*), *iw* and *i.u* (both *イウ*), *ay* and *a.i* (both *アイ*), etc. Some alternative Katakana scripts are proposed to solve this problem, but none of them are widely adopted. We are planning to support some of these alternative scripts in the future.
 
+For a full survey of Ainu orthographic variation and how each issue maps to converter behaviour, see the shared [orthographic variation catalogue](https://github.com/mkpoli/ainconv-tests/blob/main/orthography.md) in [`ainconv-tests`](https://github.com/mkpoli/ainconv-tests) (cross-implementation; maps to its `options.schema.json`).
+
 ## Installation
 
 Install the package using cargo
