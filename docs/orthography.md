@@ -115,9 +115,10 @@ even within one author (Nabesawa). The `c` affricate before non-`i` vowels is
 written with the **za-row** (ザ/ゼ/ゾ) in several systems (Edo habit).
 - *Current ainconv:* clear onsets only; `ca`→チャ etc. Voiced kana on input → passed
   through untouched (not romanised back to p/t/k).
-- *Action:* forward: an optional `affricateStyle: cha | za` system. Reverse
-  (voiced kana → which Latin) is ⚠️ — [bd gz] are allophones, generally normalise to
-  p/t/k/c, which is lossy but standard.
+- *Action:* forward: an optional `affricateKana: cha | za` system (distinct from
+  the Latin-romanization `affricateStyle` in **L4**). Reverse (voiced kana → which
+  Latin) is ⚠️ — [bd gz] are allophones, generally normalise to p/t/k/c, which is
+  lossy but standard.
 
 ### K12. Half-width katakana — 🐛 technical / ⚙️ option
 Half-width forms (U+FF61–FF9F) exist for base kana and the half-voiced mark ﾟ
@@ -144,8 +145,10 @@ romanization's job is the lookup form). Missionary/literary texts (Batchelor; Ch
 Yukie's *Ainu Shin'yōshū*) use European sentence-initial capitals. Your article's
 recommendation: lowercase for short forms, capitalise for long prose, free on the
 web.
-- *Current ainconv:* output is **always lowercase**; case is preserved within
-  Cyrillic↔Latin but not produced for kana→latn.
+- *Current ainconv:* **Latin↔Cyrillic preserves case** (verified: `Aynu itak` ↔
+  `Айну итак`, `Айну` → `Aynu`); only the kana paths are caseless (`latn→kana`
+  lowercases its input, `kana→latn` emits lowercase). Note the README's blanket
+  "always lower case" is inaccurate for the Cyrillic path.
 - *Action:* `capitalizeSentences` — but true sentence-initial caps need sentence
   segmentation (depends on punctuation handling), so it is only *semi*-deterministic.
 
@@ -369,14 +372,16 @@ these should land *with* implementations, not before.
 | `useSmallM` | bool | latn→kana | `false` | K5 |
 | `fullSizeCoda` | bool | latn→kana | `false` | K1 |
 | `longVowelStyle` | enum | both | `double`(default) / `macron` / `circumflex` / `chouonpu` | K7, L6 |
-| `affricateStyle` | enum | latn↔(kana,cyrl) | `c`(default) / `ch` / `c_caron` | L4, K11, C3 |
+| `affricateStyle` | enum | latn (romanization) | `c`(default) / `ch` / `c_caron` | L4 |
+| `affricateKana` | enum | latn→kana | `cha`(default) / `za` | K11 |
 | `glideStyle` | enum | latn | `yw`(default) / `iu` | L5 |
 | `writeGlottalStop` | enum | latn | `intervocalic`(default) / `always` / `never` | L3 |
 | `boundaryMarker` | enum | all | `equals`(default) / `space` / `hyphen` / `none` | L7 |
 | `keepAccent` | bool | all | `false` | L9 |
 | `capitalizeSentences` | bool | →latn | `false` | L1 |
 | `dialect` | enum | all | `hokkaido`(default) / `sakhalin` | L11, K7 |
-| `cyrlW` / `cyrlAffricate` | enum | latn↔cyrl | `v` / `ts` (defaults) | C1, C3 |
+| `cyrlW` | enum | latn↔cyrl | `v`(default) / `w_breve` / `u` | C1 |
+| `cyrlAffricate` | enum | latn↔cyrl | `ts`(default) / `ch` / `t` | C3 |
 
 Note these are mostly **enums**, whereas the current catalogue is boolean-only; the
 schema's `type` field already allows expressing enum options (`type: "enum"`,
