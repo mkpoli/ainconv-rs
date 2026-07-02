@@ -12,5 +12,5 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: dtolnay/rust-toolchain@stable
+      # cargo/rustup are preinstalled on ubuntu-latest runners.
       - run: cargo test
