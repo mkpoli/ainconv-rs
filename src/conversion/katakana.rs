@@ -4,6 +4,27 @@ use crate::syllable::separate;
 use crate::util::{remove_acute_accent, IsLetter, SplitIntoWords};
 use unicode_normalization::UnicodeNormalization;
 
+/// Options controlling how romanized Ainu is rendered into Katakana.
+///
+/// Each flag, when `true`, keeps a compact kana instead of spelling it out; all
+/// default to `false` (the spelled-out form). Mirrors the shared option catalog
+/// in `ainconv-tests` (`options.schema.json`).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct KanaOptions {
+    /// Keep ヰ (wi) instead of spelling it out as ウィ.
+    pub use_wi: bool,
+    /// Keep ヱ (we) instead of spelling it out as ウェ.
+    pub use_we: bool,
+    /// Keep ヲ (wo) instead of spelling it out as ウォ.
+    pub use_wo: bool,
+    /// Keep the small ィ for the -y coda instead of イ.
+    pub use_small_i: bool,
+    /// Keep the small ゥ for the -w coda instead of ウ.
+    pub use_small_u: bool,
+    /// Keep ㇴ for the -n coda instead of ン.
+    pub use_small_n: bool,
+}
+
 /// Convert romanized Ainu to Katakana
 ///
 /// # Arguments
@@ -22,7 +43,20 @@ use unicode_normalization::UnicodeNormalization;
 /// assert_eq!(kana, "アイヌ");
 /// ```
 pub fn convert_latn_to_kana(latn: &str) -> String {
-    fn convert_word(word: &str) -> String {
+    convert_latn_to_kana_with_options(latn, &KanaOptions::default())
+}
+
+/// Convert romanized Ainu to Katakana with explicit rendering [`KanaOptions`].
+///
+/// # Example
+///
+/// ```
+/// use ainconv::{convert_latn_to_kana_with_options, KanaOptions};
+/// let opts = KanaOptions { use_wi: true, ..Default::default() };
+/// assert_eq!(convert_latn_to_kana_with_options("wiki", &opts), "ヰキ");
+/// ```
+pub fn convert_latn_to_kana_with_options(latn: &str, options: &KanaOptions) -> String {
+    fn convert_word(word: &str, options: &KanaOptions) -> String {
         let latn = word.replace("=", "");
         let latn = remove_acute_accent(&latn);
         let latn = latn.to_ascii_lowercase();
@@ -168,21 +202,36 @@ pub fn convert_latn_to_kana(latn: &str) -> String {
             result.push_str(converted_coda);
         }
 
-        result
-            .replace('ィ', "イ")
-            .replace('ゥ', "ウ")
-            .replace("ㇴ", "ン")
-            .replace("ヱ", "ウェ")
-            .replace("ヰ", "ウィ")
-            .replace("ヲ", "ウォ")
-            .replace("’", "")
+        // Expand each compact kana to its spelled-out form unless the caller
+        // opted to keep it. Smalls run before the w-series so the spelled-out
+        // ウィ/ウェ/ウォ digraphs keep their small kana.
+        let mut result = result;
+        if !options.use_small_i {
+            result = result.replace('ィ', "イ");
+        }
+        if !options.use_small_u {
+            result = result.replace('ゥ', "ウ");
+        }
+        if !options.use_small_n {
+            result = result.replace('ㇴ', "ン");
+        }
+        if !options.use_we {
+            result = result.replace('ヱ', "ウェ");
+        }
+        if !options.use_wi {
+            result = result.replace('ヰ', "ウィ");
+        }
+        if !options.use_wo {
+            result = result.replace('ヲ', "ウォ");
+        }
+        result.replace('’', "")
     }
 
     latn.split_into_words()
         .into_iter()
         .map(|word| {
             if word.chars().all(|c| c.is_ainu_letter()) {
-                convert_word(&word)
+                convert_word(&word, options)
             } else {
                 word.to_owned()
             }
